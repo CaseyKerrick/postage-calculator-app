@@ -32,20 +32,18 @@ const removeDuplicateLists = (arr) => {
   return duplicatesRemoved.map(spliterate);
 };
 
-const generateSolutions = () => {
-  const cleanRequiredStamps = spliterate(desiredDenominations);
+const generateSolutions = (postageCost, stampDenominations, maxStamps, includedDenominations, excludedDenominations) => {
+  const cleanRequiredStamps = spliterate(includedDenominations);
   const requiredStampsSum = sum(cleanRequiredStamps);
 
   if (postageCost === requiredStampsSum) {
-    setSolutions(sortAndRemoveArrayDuplicates([cleanRequiredStamps]));
-    return;
+    return sortAndRemoveArrayDuplicates([cleanRequiredStamps], postageCost);
   }
 
   const cleanStampDenoms = subtractLists(spliterate(stampDenominations), spliterate(excludedDenominations));
   let rawSolutions = scrySolutions([cleanRequiredStamps], postageCost, cleanStampDenoms, maxStamps - cleanRequiredStamps.length);
-
-  setSolutions(sortAndRemoveArrayDuplicates(rawSolutions));
-  setShowFreshSolutions(true);
+  
+  return sortAndRemoveArrayDuplicates(rawSolutions, postageCost);
 };
 
 const scrySolutions = (rawSolutions, maxPostage, availableDenominations, stampSlotsRemaining) => {
@@ -69,21 +67,16 @@ const scrySolutions = (rawSolutions, maxPostage, availableDenominations, stampSl
   return scrySolutions([...removeDuplicateLists(nextSolutions)], maxPostage, availableDenominations, stampSlotsRemaining - 1);
 };
 
-const sortAndRemoveArrayDuplicates = (arr) => {
+const sortAndRemoveArrayDuplicates = (arr, postageCost) => {
   const noEmptiesOrBadSumsArr = arr.filter(item => item.length > 0 && sum(item) === postageCost);
   const sortedByLengthArr = noEmptiesOrBadSumsArr.sort((a, b) => a.length - b.length);
   return sortedByLengthArr;
 };
 
 export default {
-  callAdd: () => {
-    alert('hi')
-  },
   generateSolutions,
   DEFAULT_STAMP_DENOMINATIONS: '4, 5, 10, 18, 20, 22, 24, 29, 33, 34, 50, 51, 66, 87, 100, 111',
   DEFAULT_POSTAGE_COST: 51,
   DEFAULT_STAMP_MAX: 4,
   STRING_CONTAINS_LETTER: /[a-zA-Z]/,
-
-
 };

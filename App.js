@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Pressable, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Image, TextInput, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import Animated, { useSharedValue, withTiming, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import fullLogo from './assets/FullLogo_Transparent.png';
 import calculatorIcon from './assets/calculator-icon.png';
@@ -14,11 +15,13 @@ export default function App() {
   let tabTitleText = ['Calculator', 'Saved Combos', 'About'];
 
   // TODO: load these from phone data instead if it exists
-  let [totalPostageCost, setTotalPostageCost] = useState(Calculator.DEFAULT_POSTAGE_COST.toString());
-  let [maxStamps, setMaxStamps] = useState(Calculator.DEFAULT_STAMP_MAX.toString());
-  let [postagteDenominationsAvailable, setPostageDenominationsAvailable] = useState(Calculator.DEFAULT_STAMP_DENOMINATIONS);
+  let [totalPostageCost, setTotalPostageCost] = useState(Calculator.DEFAULT_POSTAGE_COST);
+  let [maxStamps, setMaxStamps] = useState(Calculator.DEFAULT_STAMP_MAX);
+  let [postageDenominationsAvailable, setPostageDenominationsAvailable] = useState(Calculator.DEFAULT_STAMP_DENOMINATIONS);
   let [postageToInclude, setPostageToInclude] = useState('');
   let [postageToExclude, setPostageToExclude] = useState('');
+
+  let [solutions, setSolutions] = useState('');
 
 
   return (
@@ -47,24 +50,33 @@ export default function App() {
         <View style={styles.scryOptions}>
           <View style={styles.smallTextInput}>
             <Text style={styles.textInputLabel}>Total Postage Cost</Text>
-            <TextInput style={styles.input} onChangeText={setTotalPostageCost} value={totalPostageCost} inputMode='numeric' />
+            <TextInput style={styles.input} onChangeText={setTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
           </View>
           <View style={styles.smallTextInput}>
             <Text style={styles.textInputLabel}>Max Stamps Allowed</Text>
-            <TextInput style={styles.input} onChangeText={setMaxStamps} value={maxStamps} inputMode='numeric' />
+            <TextInput style={styles.input} onChangeText={setMaxStamps} value={maxStamps.toString()} inputMode='numeric' />
           </View>
           <View style={styles.bigTextInput}>
             <Text style={styles.textInputLabel}>Postage Denominations Available</Text>
-            <TextInput style={styles.input} onChangeText={setPostageDenominationsAvailable} value={postagteDenominationsAvailable} inputMode='numeric' />
+            <TextInput style={styles.input} onChangeText={setPostageDenominationsAvailable} value={postageDenominationsAvailable} />
           </View>
           <View style={styles.bigTextInput}>
             <Text style={styles.textInputLabel}>Postage to Include</Text>
-            <TextInput style={styles.input} onChangeText={setPostageToInclude} value={postageToInclude} inputMode='numeric' />
+            <TextInput style={styles.input} onChangeText={setPostageToInclude} value={postageToInclude} />
           </View>
           <View style={styles.bigTextInput}>
             <Text style={styles.textInputLabel}>Postage to Exclude</Text>
-            <TextInput style={styles.input} onChangeText={setPostageToExclude} value={postageToExclude} inputMode='numeric' />
+            <TextInput style={styles.input} onChangeText={setPostageToExclude} value={postageToExclude} />
           </View>
+          <View style={styles.calculateButton}>
+            <Button title="Go!" color="#377D22" onPress={() => {
+              let newSolutions = Calculator.generateSolutions(totalPostageCost, postageDenominationsAvailable, maxStamps, postageToInclude, postageToExclude);
+              setSolutions(newSolutions);
+            }} />
+          </View>
+        </View>
+        <View>
+          <Text>{JSON.stringify(solutions)}</Text>
         </View>
       </View>
     </View>
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     width: '90%',
     borderColor: '#377D22',
     borderWidth: 3,
-    padding: 3,
+    padding: 6,
     flexDirection: 'row',
     justifyContent: 'space-around',
     flexWrap: 'wrap',
@@ -154,5 +166,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     zIndex: 1,
     alignSelf: 'flex-start',
+  },
+
+  calculateButton: {
+    width: '95%',
+    marginBottom: 5,
+    marginTop: 8,
   },
 });
