@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Pressable, Image, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, Image, TextInput, Button, Keyboard } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import Animated, { useSharedValue, withTiming, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import fullLogo from './assets/FullLogo_Transparent.png';
@@ -21,7 +21,11 @@ export default function App() {
   let [postageToInclude, setPostageToInclude] = useState('');
   let [postageToExclude, setPostageToExclude] = useState('');
 
-  let [solutions, setSolutions] = useState('');
+  let [solutions, setSolutions] = useState([]);
+
+  const saveTotalPostageCost = (value) => {
+    setTotalPostageCost(value);
+  };
 
 
   return (
@@ -46,11 +50,11 @@ export default function App() {
       <View style={styles.logoContainer}>
         <Image source={fullLogo} style={styles.appLogo} />
       </View>
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} >
         <View style={styles.scryOptions}>
           <View style={styles.smallTextInput}>
-            <Text style={styles.textInputLabel}>Total Postage Cost</Text>
-            <TextInput style={styles.input} onChangeText={setTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
+            <Text style={styles.textInputLabel} onSubmitEditing={Keyboard.dismiss}>Total Postage Cost</Text>
+            <TextInput style={styles.input} onChangeText={saveTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
           </View>
           <View style={styles.smallTextInput}>
             <Text style={styles.textInputLabel}>Max Stamps Allowed</Text>
@@ -75,10 +79,23 @@ export default function App() {
             }} />
           </View>
         </View>
-        <View>
-          <Text>{JSON.stringify(solutions)}</Text>
+        <View style={styles.solutionsHolder}>
+          { solutions.map(solution => {
+            return (
+              <View style={styles.solutionContainer} key={solution.toString()}>
+                { solution.map((stamp, stampIndex) => {
+                  return (
+                    <View style={styles.individualStamp} key={`${stampIndex}_${stamp}`}>
+                      <Text>{stamp}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+          {/* <Text>{JSON.stringify(solutions)}</Text> */}
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -125,7 +142,7 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
   },
 
@@ -173,4 +190,27 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 8,
   },
+
+  solutionContainer: {
+    backgroundColor: '#377D22',
+    marginTop: 10,
+    // height: 80,
+    borderRadius: 3,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 8,
+    paddingLeft: 12,
+  },
+
+  solutionsHolder: {
+    width: '60%',
+    alignContent: 'space-around',
+  },
+
+  individualStamp: {
+    height: 60,
+    width: 40,
+    backgroundColor: '#fff',
+    margin: 5,
+  }
 });
