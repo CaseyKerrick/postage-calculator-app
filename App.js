@@ -20,11 +20,21 @@ export default function App() {
   let [postageDenominationsAvailable, setPostageDenominationsAvailable] = useState(Calculator.DEFAULT_STAMP_DENOMINATIONS);
   let [postageToInclude, setPostageToInclude] = useState('');
   let [postageToExclude, setPostageToExclude] = useState('');
+  let [savedSolutions, setSavedSolutions] = useState([{ total: 51, values: [18, 33] }])
 
   let [solutions, setSolutions] = useState([]);
 
   const saveTotalPostageCost = (value) => {
     setTotalPostageCost(value);
+  };
+
+  const addSavedSolution = (solution, index) => {
+    setSavedSolutions([...savedSolutions, { total: totalPostageCost, values: solution}]);
+    setSolutions([...solutions.slice(0, index), ...solutions.slice(index + 1, solutions.length)]);
+  };
+
+  const removeSavedSolution = (index) => {
+    setSavedSolutions([...savedSolutions.slice(0, index), ...savedSolutions.slice(index + 1, savedSolutions.length)]);
   };
 
 
@@ -50,52 +60,86 @@ export default function App() {
       <View style={styles.logoContainer}>
         <Image source={fullLogo} style={styles.appLogo} />
       </View>
-      <ScrollView contentContainerStyle={styles.content} >
-        <View style={styles.scryOptions}>
-          <View style={styles.smallTextInput}>
-            <Text style={styles.textInputLabel} onSubmitEditing={Keyboard.dismiss}>Total Postage Cost</Text>
-            <TextInput style={styles.input} onChangeText={saveTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
+
+      { selectedTab === 0 &&
+        <ScrollView contentContainerStyle={styles.content} >
+          <View style={styles.scryOptions}>
+            <View style={styles.smallTextInput}>
+              <Text style={styles.textInputLabel} onSubmitEditing={Keyboard.dismiss}>Total Postage Cost</Text>
+              <TextInput style={styles.input} onChangeText={saveTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
+            </View>
+            <View style={styles.smallTextInput}>
+              <Text style={styles.textInputLabel}>Max Stamps Allowed</Text>
+              <TextInput style={styles.input} onChangeText={setMaxStamps} value={maxStamps.toString()} inputMode='numeric' />
+            </View>
+            <View style={styles.bigTextInput}>
+              <Text style={styles.textInputLabel}>Postage Denominations Available</Text>
+              <TextInput style={styles.input} onChangeText={setPostageDenominationsAvailable} value={postageDenominationsAvailable} />
+            </View>
+            <View style={styles.bigTextInput}>
+              <Text style={styles.textInputLabel}>Postage to Include</Text>
+              <TextInput style={styles.input} onChangeText={setPostageToInclude} value={postageToInclude} />
+            </View>
+            <View style={styles.bigTextInput}>
+              <Text style={styles.textInputLabel}>Postage to Exclude</Text>
+              <TextInput style={styles.input} onChangeText={setPostageToExclude} value={postageToExclude} />
+            </View>
+            <View style={styles.calculateButton}>
+              <Button title="Go!" color="#377D22" onPress={() => {
+                let newSolutions = Calculator.generateSolutions(totalPostageCost, postageDenominationsAvailable, maxStamps, postageToInclude, postageToExclude);
+                setSolutions(newSolutions);
+              }} />
+            </View>
           </View>
-          <View style={styles.smallTextInput}>
-            <Text style={styles.textInputLabel}>Max Stamps Allowed</Text>
-            <TextInput style={styles.input} onChangeText={setMaxStamps} value={maxStamps.toString()} inputMode='numeric' />
+          <View style={styles.solutionsHolder}>
+            { solutions.map((solution, solutionIndex) => {
+              return (
+                <Pressable onPress={() => addSavedSolution(solution, solutionIndex)} key={`${solution.toString()}_${solutionIndex}`}>
+                  <View style={styles.solutionContainer} key={solution.toString()}>
+                    { solution.map((stampValue, stampIndex) => {
+                      return (
+                        <View style={styles.stamp} key={`${stampIndex}_${stampValue}`}>
+                          <Text style={styles.stampText}>{stampValue}</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
-          <View style={styles.bigTextInput}>
-            <Text style={styles.textInputLabel}>Postage Denominations Available</Text>
-            <TextInput style={styles.input} onChangeText={setPostageDenominationsAvailable} value={postageDenominationsAvailable} />
-          </View>
-          <View style={styles.bigTextInput}>
-            <Text style={styles.textInputLabel}>Postage to Include</Text>
-            <TextInput style={styles.input} onChangeText={setPostageToInclude} value={postageToInclude} />
-          </View>
-          <View style={styles.bigTextInput}>
-            <Text style={styles.textInputLabel}>Postage to Exclude</Text>
-            <TextInput style={styles.input} onChangeText={setPostageToExclude} value={postageToExclude} />
-          </View>
-          <View style={styles.calculateButton}>
-            <Button title="Go!" color="#377D22" onPress={() => {
-              let newSolutions = Calculator.generateSolutions(totalPostageCost, postageDenominationsAvailable, maxStamps, postageToInclude, postageToExclude);
-              setSolutions(newSolutions);
-            }} />
-          </View>
-        </View>
-        <View style={styles.solutionsHolder}>
-          { solutions.map(solution => {
-            return (
-              <View style={styles.solutionContainer} key={solution.toString()}>
-                { solution.map((stamp, stampIndex) => {
-                  return (
-                    <View style={styles.individualStamp} key={`${stampIndex}_${stamp}`}>
-                      <Text>{stamp}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            );
+        </ScrollView>
+      }
+      { selectedTab === 1 &&
+        <ScrollView>
+          { savedSolutions.map((solution, solutionIndex) => {
+              return (
+                <Pressable onPress={() => removeSavedSolution(solutionIndex)} key={`${solution.toString()}_${solutionIndex}`}>
+                  <View style={styles.solutionContainer} key={solution.values.toString()}>
+                    { solution.values.map((stampValue, stampIndex) => {
+                      return (
+                        <View style={styles.stamp} key={`${stampIndex}_${stampValue}`}>
+                          <Text style={styles.stampText}>{stampValue}</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </Pressable>
+              );
           })}
-          {/* <Text>{JSON.stringify(solutions)}</Text> */}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      }
+      { selectedTab === 2 &&
+        <ScrollView contentContainerStyle={styles.aboutContainer}>
+          <Text>Instructions:</Text>
+          <Text>Total Postage Cost - The total that all the stamps in each solution will add up to.</Text>
+          <Text>Max Stamps Allowed - The maximum number of stamps that can be in each solution.</Text>
+          <Text>Postage Denomoinations Available - The possible stamp values that can be used in each solution.</Text>
+          <Text>Postage To Include - Force the program to include each of these values in every solution.</Text>
+          <Text>Postage To Exclude - Force the program to not use these values, even if they're in the Postage Denominations Available.</Text>
+        </ScrollView>
+      }
+
     </View>
   );
 }
@@ -194,7 +238,6 @@ const styles = StyleSheet.create({
   solutionContainer: {
     backgroundColor: '#377D22',
     marginTop: 10,
-    // height: 80,
     borderRadius: 3,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -203,14 +246,31 @@ const styles = StyleSheet.create({
   },
 
   solutionsHolder: {
-    width: '60%',
+    width: '65%',
     alignContent: 'space-around',
+    marginTop: 12,
+    marginBottom: 20,
   },
 
-  individualStamp: {
+  stamp: {
     height: 60,
-    width: 40,
+    width: 45,
     backgroundColor: '#fff',
     margin: 5,
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderStyle: 'dotted',
+    borderWidth: 2.25,
+    borderColor: '#377D22',
+  },
+
+  stampText: {
+    fontWeight: 'bold',
+  },
+
+  aboutContainer: {
+    width: '80%',
+    flexGrow: 1,
+    alignSelf: 'center',
+  },
 });

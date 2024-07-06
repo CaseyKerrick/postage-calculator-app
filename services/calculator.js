@@ -1,8 +1,3 @@
-const DEFAULT_STAMP_DENOMINATIONS = '4, 5, 10, 18, 20, 22, 24, 29, 33, 34, 50, 51, 66, 87, 100, 111';
-const DEFAULT_POSTAGE_COST = 51;
-const DEFAULT_STAMP_MAX = 4;
-const STRING_CONTAINS_LETTER = /[a-zA-Z]/;
-
 const spliterate = (rawArr) => {
   return rawArr.split(',').map((item) => Number.parseInt(item)).filter(item => !!item);
 };
