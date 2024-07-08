@@ -112,12 +112,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: -5,
     padding: 8,
+    borderRadius: 3,
   },
 
   calculateButton: {
     width: '95%',
     marginBottom: 5,
     marginTop: 8,
+    borderRadius: 3,
   },
 
   solutionsHolder: {

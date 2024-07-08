@@ -153,10 +153,4 @@ const styles = StyleSheet.create({
     marginLeft: -5,
     alignSelf: 'center',
   },
-
-  aboutContainer: {
-    width: '80%',
-    flexGrow: 1,
-    alignSelf: 'center',
-  },
 });
