@@ -70,8 +70,8 @@ const sortAndRemoveArrayDuplicates = (arr, postageCost) => {
 
 export default {
   generateSolutions,
-  DEFAULT_STAMP_DENOMINATIONS: '4, 5, 10, 18, 20, 22, 24, 29, 33, 34, 50, 51, 66, 87, 100, 111',
-  DEFAULT_POSTAGE_COST: 51,
+  DEFAULT_STAMP_DENOMINATIONS: '2, 6, 8, 10, 18, 20, 22, 24, 29, 32, 33, 34, 56, 73',
+  DEFAULT_POSTAGE_COST: 56,
   DEFAULT_STAMP_MAX: 4,
   STRING_CONTAINS_LETTER: /[a-zA-Z]/,
 };

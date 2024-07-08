@@ -2,40 +2,63 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, Button, Keyboard } from 'react-native';
 import Calculator from '../services/calculator';
 import Util from '../services/util';
+import PhoneStorage from '../services/phoneStorage';
 
 
 export default function StampCalculator({ solutions, setSolutions, isSolutionSaved, toggleNewSolution }) {
-  // TODO: load these from phone storage if it exists
-  let [totalPostageCost, setTotalPostageCost] = useState(Calculator.DEFAULT_POSTAGE_COST);
-  let [maxStamps, setMaxStamps] = useState(Calculator.DEFAULT_STAMP_MAX);
-  let [postageDenominationsAvailable, setPostageDenominationsAvailable] = useState(Calculator.DEFAULT_STAMP_DENOMINATIONS);
-  let [postageToInclude, setPostageToInclude] = useState('');
-  let [postageToExclude, setPostageToExclude] = useState('');
-  //
+  let [totalPostageCost, setTotalPostageCost] = useState(PhoneStorage.totalPostageCost || Calculator.DEFAULT_POSTAGE_COST);
+  let [maxStamps, setMaxStamps] = useState(PhoneStorage.maxStamps || Calculator.DEFAULT_STAMP_MAX);
+  let [postageDenominationsAvailable, setPostageDenominationsAvailable] = useState(PhoneStorage.postageDenominationsAvailable || Calculator.DEFAULT_STAMP_DENOMINATIONS);
+  let [postageToInclude, setPostageToInclude] = useState(PhoneStorage.postageToInclude || '');
+  let [postageToExclude, setPostageToExclude] = useState(PhoneStorage.postageToExclude || '');
 
+  const setAndSavePostageCost = (newTotalPostage) => {
+    PhoneStorage.totalPostageCost = newTotalPostage;
+    setTotalPostageCost(newTotalPostage);
+  };
+
+  const setAndSaveMaxStamps = (newMaxStamps) => {
+    PhoneStorage.maxStamps = newMaxStamps;
+    setMaxStamps(newMaxStamps);
+  };
+
+  const setAndSavePostageDenoms = (newDenoms) => {
+    PhoneStorage.postageDenominationsAvailable = newDenoms;
+    setPostageDenominationsAvailable(newDenoms);
+  };
+
+  const setAndSavePostageToInclude = (newPostageToInclude) => {
+    PhoneStorage.postageToInclude = newPostageToInclude;
+    setPostageToInclude(newPostageToInclude);
+  };
+
+  const setAndSavePostageToExclude = (newPostageToExclude) => {
+    PhoneStorage.postageToExclude = newPostageToExclude;
+    setPostageToExclude(newPostageToExclude);
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.content} >
       <View style={styles.scryOptions}>
         <View style={styles.smallTextInput}>
           <Text style={styles.textInputLabel} onSubmitEditing={Keyboard.dismiss}>Total Postage Cost</Text>
-          <TextInput style={styles.input} onChangeText={setTotalPostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
+          <TextInput style={styles.input} onChangeText={setAndSavePostageCost} value={totalPostageCost.toString()} inputMode='numeric' />
         </View>
         <View style={styles.smallTextInput}>
           <Text style={styles.textInputLabel}>Max Stamps Allowed</Text>
-          <TextInput style={styles.input} onChangeText={setMaxStamps} value={maxStamps.toString()} inputMode='numeric' />
+          <TextInput style={styles.input} onChangeText={setAndSaveMaxStamps} value={maxStamps.toString()} inputMode='numeric' />
         </View>
         <View style={styles.bigTextInput}>
           <Text style={styles.textInputLabel}>Postage Denominations Available</Text>
-          <TextInput style={styles.input} onChangeText={setPostageDenominationsAvailable} value={postageDenominationsAvailable} />
+          <TextInput style={styles.input} onChangeText={setAndSavePostageDenoms} value={postageDenominationsAvailable} />
         </View>
         <View style={styles.bigTextInput}>
           <Text style={styles.textInputLabel}>Postage to Include</Text>
-          <TextInput style={styles.input} onChangeText={setPostageToInclude} value={postageToInclude} />
+          <TextInput style={styles.input} onChangeText={setAndSavePostageToInclude} value={postageToInclude} />
         </View>
         <View style={styles.bigTextInput}>
           <Text style={styles.textInputLabel}>Postage to Exclude</Text>
-          <TextInput style={styles.input} onChangeText={setPostageToExclude} value={postageToExclude} />
+          <TextInput style={styles.input} onChangeText={setAndSavePostageToExclude} value={postageToExclude} />
         </View>
         <View style={styles.calculateButton}>
           <Button title="Go!" color={Util.DARK_GREEN} onPress={() => {
@@ -43,7 +66,6 @@ export default function StampCalculator({ solutions, setSolutions, isSolutionSav
             let processedSolutions = newSolutions.map((solution) => {
               return { total: totalPostageCost, values: solution, saved: isSolutionSaved(solution)};
             });
-            console.log(newSolutions);
             setSolutions(processedSolutions);
           }} />
         </View>

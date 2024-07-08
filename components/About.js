@@ -20,7 +20,7 @@ export default function About() {
         <Text style={styles.sectionTitle}>Controls Explanation</Text>
         <Text style={styles.sectionText}>Total Postage Cost (in cents) - The total that each set of stamps will add up to.</Text>
         <Text style={styles.sectionText}>Max Stamps Allowed - The maximum number of stamps allowed in each solution.</Text>
-        <Text style={styles.sectionText}>Postage Denomoinations Available - The list of all possible stamp values that can be used in each solution.</Text>
+        <Text style={styles.sectionText}>Postage Denomoinations Available - The list of all possible stamp values that can be used in each solution. Please put these numbers in numeric order.</Text>
         <Text style={styles.sectionText}>Postage To Include - Force the program to include each of these values in every solution.</Text>
         <Text style={styles.sectionText}>Postage To Exclude - Force the program to exclude these values, even if they're in the Postage Denominations Available. Using this list can be helpful to prevent you from forgetting which stamp denominations are available to you.</Text>
       </View>

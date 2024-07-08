@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, Pressable, Image, TextInput, Button, Keyboard } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
 // import Animated, { useSharedValue, withTiming, useAnimatedStyle, Easing } from 'react-native-reanimated';
 import fullLogo from './assets/FullLogo_Transparent.png';
 import calculatorIcon from './assets/calculator-icon.png';
 import saveIcon from './assets/save-icon.png';
 import aboutIcon from './assets/about-icon.png';
+import PhoneStorage from './services/phoneStorage';
 import Util from './services/util';
 import About from './components/About';
 import SavedCombinations from './components/SavedCombinations';
 import StampCalculator from './components/StampCalculator';
 
+// FEATURE IDEAS
 // toast that says a solution has been saved
 // animation to slowly phase out item being removed
-// solutions that have been added change color
 // ?? saved solutions can be removed by clicking on them, but they don't "remove" themselves from the list until you go to another tab
+
 
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
   let [solutions, setSolutions] = useState([]);
 
   // TODO: load from phone data instead if it exists
-  let [savedSolutions, setSavedSolutions] = useState([{ total: 51, values: [18, 33], saved: true }]);
+  let [savedSolutions, setSavedSolutions] = useState(PhoneStorage.savedSolutions || []);
 
   const navigateToTab = (tab) => () => {
     if (tab === 0) {
@@ -33,6 +34,8 @@ export default function App() {
         return { total, values, saved: isSolutionSaved(values) };
       }));
     } else if (tab === 1) {
+      const sortedSavedSolutions = sortSavedSolutions();
+      PhoneStorage.savedSolutions = sortedSavedSolutions;
       setSavedSolutions(sortSavedSolutions());
     }
 
@@ -52,13 +55,17 @@ export default function App() {
     let saving = !solutions[index].saved;
     if (saving) {
       setSolutions([...solutions.slice(0, index), {...solutions[index], saved: true}, ...solutions.slice(index + 1, solutions.length)]);
+      PhoneStorage.savedSolutions = [...savedSolutions, {...solutions[index], saved: true}];
+      console.log(PhoneStorage.savedSolutions);
       setSavedSolutions([...savedSolutions, {...solutions[index], saved: true}]);
     }
   };
 
   const toggleSavedSolution = (index) => {
     // TODO: allow saved solutions to be toggled to false, which then disappear when you navigate to a different tab
-    setSavedSolutions([...savedSolutions.slice(0, index), ...savedSolutions.slice(index + 1, savedSolutions.length)]);
+    const newSavedSolutions = [...savedSolutions.slice(0, index), ...savedSolutions.slice(index + 1, savedSolutions.length)];
+    PhoneStorage.savedSolutions = newSavedSolutions;
+    setSavedSolutions(newSavedSolutions);
   };
 
   const isSolutionSaved = (solution) => {
