@@ -1,41 +1,24 @@
-import { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Pressable, TextInput, Button, Keyboard } from 'react-native';
 import Calculator from '../services/calculator';
 import Util from '../services/util';
-import PhoneStorage from '../services/phoneStorage';
 
 
-export default function StampCalculator({ solutions, setSolutions, isSolutionSaved, toggleNewSolution }) {
-  let [totalPostageCost, setTotalPostageCost] = useState(PhoneStorage.totalPostageCost || Calculator.DEFAULT_POSTAGE_COST);
-  let [maxStamps, setMaxStamps] = useState(PhoneStorage.maxStamps || Calculator.DEFAULT_STAMP_MAX);
-  let [postageDenominationsAvailable, setPostageDenominationsAvailable] = useState(PhoneStorage.postageDenominationsAvailable || Calculator.DEFAULT_STAMP_DENOMINATIONS);
-  let [postageToInclude, setPostageToInclude] = useState(PhoneStorage.postageToInclude || '');
-  let [postageToExclude, setPostageToExclude] = useState(PhoneStorage.postageToExclude || '');
-
-  const setAndSavePostageCost = (newTotalPostage) => {
-    PhoneStorage.totalPostageCost = newTotalPostage;
-    setTotalPostageCost(newTotalPostage);
-  };
-
-  const setAndSaveMaxStamps = (newMaxStamps) => {
-    PhoneStorage.maxStamps = newMaxStamps;
-    setMaxStamps(newMaxStamps);
-  };
-
-  const setAndSavePostageDenoms = (newDenoms) => {
-    PhoneStorage.postageDenominationsAvailable = newDenoms;
-    setPostageDenominationsAvailable(newDenoms);
-  };
-
-  const setAndSavePostageToInclude = (newPostageToInclude) => {
-    PhoneStorage.postageToInclude = newPostageToInclude;
-    setPostageToInclude(newPostageToInclude);
-  };
-
-  const setAndSavePostageToExclude = (newPostageToExclude) => {
-    PhoneStorage.postageToExclude = newPostageToExclude;
-    setPostageToExclude(newPostageToExclude);
-  };
+export default function StampCalculator({
+    solutions,
+    setSolutions,
+    isSolutionSaved,
+    toggleNewSolution,
+    totalPostageCost,
+    setAndSavePostageCost,
+    maxStamps,
+    setAndSaveMaxStamps,
+    postageDenominationsAvailable,
+    setAndSavePostageDenoms,
+    postageToInclude,
+    setAndSavePostageToInclude,
+    postageToExclude,
+    setAndSavePostageToExclude,
+  }) {
 
   return (
     <ScrollView contentContainerStyle={styles.content} >
